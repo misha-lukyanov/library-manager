@@ -1,0 +1,27 @@
+# Byte-compiled
+__pycache__/
+*.py[cod]
+*.so
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Database
+*.db
+*.sqlite3
+
+# Distribution
+dist/
+build/
+*.spec
+
+# Logs
+*.log
