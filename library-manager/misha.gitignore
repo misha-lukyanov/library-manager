@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.venv/
+venv/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+
+# Build
+build/
+dist/
+*.spec
+
+# Data (JSON файл)
+data/*.json
+data/*.db
+
+# OS
+.DS_Store
+Thumbs.db
