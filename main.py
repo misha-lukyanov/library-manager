@@ -3,7 +3,7 @@
 
 """
 Менеджер книг - приложение для управления личной библиотекой
-Версия: 1.0
+Версия: 2.0
 """
 
 import sys
@@ -16,6 +16,11 @@ def setup_environment():
     # Создание необходимых папок
     os.makedirs("data", exist_ok=True)
 
+    # Проверка наличия базы данных
+    db_path = "data/library.db"
+    if not os.path.exists(db_path):
+        print(f"База данных будет создана: {db_path}")
+
 
 def main():
     """Главная функция"""
@@ -23,12 +28,20 @@ def main():
         # Настройка окружения
         setup_environment()
 
+        print("=" * 50)
+        print("📚 Менеджер книг")
+        print("=" * 50)
+        print("Запуск приложения...")
+
         # Запуск приложения
         app = MainWindow()
         app.run()
 
     except Exception as e:
-        print(f"Ошибка при запуске приложения: {e}")
+        print(f"❌ Ошибка при запуске приложения: {e}")
+        import traceback
+        traceback.print_exc()
+        input("Нажмите Enter для выхода...")
         sys.exit(1)
 
 

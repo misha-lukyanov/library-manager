@@ -41,8 +41,8 @@ class DatabaseManager:
             cursor.execute('''
                 INSERT INTO books (title, author, year, rating, genre, description, is_read)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
-            ''', (book.title, book.author, book.year, book.rating,
-                  book.genre, book.description, book.is_read))
+            ''', (book.title, book.author, book.year, float(book.rating),
+                  book.genre, book.description, 1 if book.is_read else 0))
             conn.commit()
             return cursor.lastrowid
 
@@ -50,7 +50,7 @@ class DatabaseManager:
         """Получить все книги"""
         with self.get_connection() as conn:
             cursor = conn.cursor()
-            cursor.execute('SELECT * FROM books')
+            cursor.execute('SELECT * FROM books ORDER BY title')
             rows = cursor.fetchall()
 
             books = []
@@ -59,7 +59,7 @@ class DatabaseManager:
                     title=row[1],
                     author=row[2],
                     year=row[3],
-                    rating=row[4],
+                    rating=float(row[4]),  # Преобразуем в float
                     genre=row[5],
                     description=row[6],
                     book_id=row[0]
@@ -75,6 +75,7 @@ class DatabaseManager:
             cursor.execute('''
                 SELECT * FROM books 
                 WHERE title LIKE ? OR author LIKE ?
+                ORDER BY title
             ''', (f'%{query}%', f'%{query}%'))
 
             rows = cursor.fetchall()
@@ -84,7 +85,7 @@ class DatabaseManager:
                     title=row[1],
                     author=row[2],
                     year=row[3],
-                    rating=row[4],
+                    rating=float(row[4]),
                     genre=row[5],
                     description=row[6],
                     book_id=row[0]
@@ -101,8 +102,8 @@ class DatabaseManager:
                 UPDATE books 
                 SET title=?, author=?, year=?, rating=?, genre=?, description=?, is_read=?
                 WHERE id=?
-            ''', (book.title, book.author, book.year, book.rating,
-                  book.genre, book.description, book.is_read, book.id))
+            ''', (book.title, book.author, book.year, float(book.rating),
+                  book.genre, book.description, 1 if book.is_read else 0, book.id))
             conn.commit()
             return cursor.rowcount > 0
 
@@ -118,7 +119,7 @@ class DatabaseManager:
         """Получить книги по автору"""
         with self.get_connection() as conn:
             cursor = conn.cursor()
-            cursor.execute('SELECT * FROM books WHERE author=?', (author,))
+            cursor.execute('SELECT * FROM books WHERE author=? ORDER BY title', (author,))
             rows = cursor.fetchall()
 
             books = []
@@ -127,7 +128,7 @@ class DatabaseManager:
                     title=row[1],
                     author=row[2],
                     year=row[3],
-                    rating=row[4],
+                    rating=float(row[4]),
                     genre=row[5],
                     description=row[6],
                     book_id=row[0]

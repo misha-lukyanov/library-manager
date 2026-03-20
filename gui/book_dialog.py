@@ -13,7 +13,7 @@ class BookDialog(tk.Toplevel):
 
         # Настройка окна
         self.title(title)
-        self.geometry("400x500")
+        self.geometry("450x550")
         self.resizable(False, False)
 
         # Делаем окно модальным
@@ -70,16 +70,23 @@ class BookDialog(tk.Toplevel):
         # Рейтинг
         ttk.Label(main_frame, text="Рейтинг (0-5):", font=('Arial', 10, 'bold')).grid(row=4, column=0, sticky='w',
                                                                                       pady=(0, 5))
-        self.rating_var = tk.IntVar(value=0)
+        self.rating_var = tk.DoubleVar(value=0.0)  # Используем DoubleVar для float
         rating_frame = ttk.Frame(main_frame)
         rating_frame.grid(row=4, column=1, sticky='w', pady=(0, 10))
 
-        for i in range(6):
-            rb = ttk.Radiobutton(rating_frame, text=str(i), variable=self.rating_var, value=i)
+        # Создаем радиокнопки для рейтинга (0.0, 1.0, 2.0, 3.0, 4.0, 5.0)
+        ratings = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0]
+        for i, rating in enumerate(ratings):
+            rb = ttk.Radiobutton(
+                rating_frame,
+                text=str(int(rating)) if rating.is_integer() else str(rating),
+                variable=self.rating_var,
+                value=rating
+            )
             rb.pack(side=tk.LEFT, padx=2)
 
         # Прочитано
-        self.read_var = tk.BooleanVar()
+        self.read_var = tk.BooleanVar(value=False)
         ttk.Checkbutton(main_frame, text="Книга прочитана", variable=self.read_var).grid(row=5, column=1, sticky='w',
                                                                                          pady=(0, 10))
 
@@ -91,7 +98,7 @@ class BookDialog(tk.Toplevel):
         text_frame = ttk.Frame(main_frame)
         text_frame.grid(row=6, column=1, sticky='ew', pady=(0, 10))
 
-        self.desc_text = tk.Text(text_frame, width=30, height=8, font=('Arial', 10))
+        self.desc_text = tk.Text(text_frame, width=30, height=8, font=('Arial', 10), wrap=tk.WORD)
         self.desc_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         desc_scrollbar = ttk.Scrollbar(text_frame, orient=tk.VERTICAL, command=self.desc_text.yview)
@@ -114,7 +121,7 @@ class BookDialog(tk.Toplevel):
         self.author_entry.insert(0, self.book.author)
         self.year_entry.insert(0, str(self.book.year))
         self.genre_entry.insert(0, self.book.genre)
-        self.rating_var.set(int(self.book.rating))
+        self.rating_var.set(float(self.book.rating))  # Устанавливаем как float
         self.read_var.set(self.book.is_read)
         self.desc_text.insert('1.0', self.book.description)
 
@@ -147,16 +154,20 @@ class BookDialog(tk.Toplevel):
         if not self.validate():
             return
 
+        # Получаем рейтинг как число с плавающей точкой
+        rating_value = self.rating_var.get()
+
         self.result = {
             'title': self.title_entry.get().strip(),
             'author': self.author_entry.get().strip(),
             'year': self.year_entry.get().strip() or '0',
             'genre': self.genre_entry.get().strip(),
-            'rating': self.rating_var.get(),
+            'rating': float(rating_value),  # Явно преобразуем в float
             'read': self.read_var.get(),
             'description': self.desc_text.get('1.0', 'end-1c').strip()
         }
 
+        print(f"Сохраняю книгу с рейтингом: {self.result['rating']}")  # Отладка
         self.destroy()
 
     def cancel(self):
